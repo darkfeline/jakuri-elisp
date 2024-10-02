@@ -24,5 +24,37 @@
 
 ;;; Code:
 
+;;;###autoload
+(defun jakuri-sort-uniq (beg end)
+  "Sort and uniq lines between BEG and END."
+  (interactive "r")
+  (shell-command-on-region beg end "sort | uniq" t t))
+
+;;;###autoload
+(defun jakuri-stable-uniq (beg end)
+  "Remove duplicate lines between BEG and END without sorting."
+  (interactive "r")
+  (let ((seen (make-hash-table :test 'equal)))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region beg end)
+        (goto-char (point-min))
+        (atomic-change-group
+          (while (not (eobp))
+            (let ((line (thing-at-point 'line t)))
+              (if (gethash line seen)
+                  (delete-region (point) (save-excursion (forward-line) (point)))
+                (puthash line t seen)
+                (forward-line)))))))))
+
+;;;###autoload
+(defun jakuri-toggle-quotes (beg end)
+  "Toggle single and double quotes in region BEG to END."
+  (interactive "r")
+  (translate-region beg end (let ((table (make-char-table 'translation-table)))
+                              (aset table ?' ?\")
+                              (aset table ?\" ?')
+                              table)))
+
 (provide 'jakuri)
 ;;; jakuri.el ends here
