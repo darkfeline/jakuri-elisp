@@ -72,5 +72,28 @@ If current directory is remote, use the home directory instead."
   (let ((default-directory dir))
     (shell (generate-new-buffer-name "*shell*"))))
 
+
+;;; Packages
+
+;;;###autoload
+(defun jakuri-package-recompile-all ()
+  "Byte-compile all installed packages.
+This is meant to be used only in the case the byte-compiled files
+are invalid due to changed byte-code, macros or the like.
+
+Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.html'."
+  (interactive)
+  (pcase-dolist (`(_ ,pkg-desc) package-alist)
+    (with-demoted-errors "Error while recompiling: %S"
+      (package-recompile pkg-desc))))
+
+;;;###autoload
+(defun jakuri-package-rebuild ()
+  "Rebuild all package stuff."
+  (interactive)
+  (package-initialize)
+  (package-quickstart-refresh)
+  (jakuri-package-recompile-all))
+
 (provide 'jakuri)
 ;;; jakuri.el ends here
