@@ -73,6 +73,34 @@ If current directory is remote, use the home directory instead."
     (shell (generate-new-buffer-name "*shell*"))))
 
 
+;;; Buffer and files
+
+;;;###autoload
+(defun jakuri-sudo-find-buffer-file ()
+  "Find current buffer's file with TRAMP sudo."
+  (interactive)
+  (find-file (format "/sudo::%s" (if buffer-file-name buffer-file-name default-directory))))
+
+;;;###autoload
+(defun jakuri-kill-directory-files ()
+  "Save current directory files to kill ring."
+  (interactive)
+  (kill-new (string-join
+             (directory-files default-directory nil (rx (or (not (any ?.))
+                                                            (= 3 anything))))
+             "\n")))
+
+;;;###autoload
+(defun jakuri-kill-buffer-file-name ()
+  "Put the buffer file name in the kill ring."
+  (interactive)
+  (kill-new (cond
+             ((eq major-mode 'dired-mode)
+              (when (boundp 'dired-directory)
+                dired-directory))
+             (t (buffer-file-name)))))
+
+
 ;;; Packages
 
 ;;;###autoload
