@@ -24,6 +24,9 @@
 
 ;;; Code:
 
+
+;;; Text editing
+
 ;;;###autoload
 (defun jakuri-sort-uniq (beg end)
   "Sort and uniq lines between BEG and END."
@@ -55,6 +58,19 @@
                               (aset table ?' ?\")
                               (aset table ?\" ?')
                               table)))
+
+
+;;; Comint/shell
+
+;;;###autoload
+(defun jakuri-shell (dir)
+  "Open a shell in DIR.
+If current directory is remote, use the home directory instead."
+  (interactive (list (if (file-remote-p default-directory)
+                         (expand-file-name "~")
+                       default-directory)))
+  (let ((default-directory dir))
+    (shell (generate-new-buffer-name "*shell*"))))
 
 (provide 'jakuri)
 ;;; jakuri.el ends here
