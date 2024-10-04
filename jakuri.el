@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2024  Allen Li
 
-;; Author: Allen Li <ayatane@google.com>
+;; Author: Allen Li <ayatane@felesatra.moe>
 ;; Keywords: local
 
 ;; This program is free software; you can redistribute it and/or modify
