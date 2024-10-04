@@ -2,7 +2,8 @@
 
 ;; Copyright (C) 2024  Allen Li
 
-;; Author: Allen Li <ayatane@felesatra.moe>
+;; Author: Allen Li <darkfeline@felesatra.moe>
+;; Version: 0.1.0
 ;; Keywords: local
 
 ;; This program is free software; you can redistribute it and/or modify
