@@ -1,1 +1,3 @@
 /jakuri-autoloads.el
+/jakuri-pkg.el
+*.elc
