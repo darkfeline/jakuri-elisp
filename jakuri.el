@@ -124,5 +124,38 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
   (package-quickstart-refresh)
   (jakuri-package-recompile-all))
 
+
+;;; System integration
+
+;;;###autoload
+(defun jakuri-tail-interprogram-paste ()
+  "Insert text from ‘interprogram-paste-function’ until quitted."
+  (interactive)
+  (while t
+    (insert (jakuri--wait-for-clipboard))
+    (insert "\n")
+    (recenter)))
+
+(defun jakuri--wait-for-clipboard ()
+  "Wait for and return text from system clipboard."
+  (funcall interprogram-cut-function "")
+  (with-temp-message "Waiting for clipboard, C-g to stop"
+    (catch 'ret
+      (while t
+        (let ((new (funcall interprogram-paste-function)))
+          (if (and (not (null new))
+                   (not (equal new "")))
+              (throw 'ret new)))
+        (sit-for 0.05 t)))))
+
+;;;###autoload
+(defun jakuri-reset-reintegrate ()
+  "Reset reintegrate bindings."
+  (interactive)
+  (setq browse-url-browser-function #'browse-url-default-browser
+        interprogram-cut-function nil
+        interprogram-paste-function nil))
+
+
 (provide 'jakuri)
 ;;; jakuri.el ends here
