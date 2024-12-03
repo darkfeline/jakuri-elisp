@@ -68,6 +68,64 @@
     (remove-text-properties beg end '(read-only t))))
 
 
+;;; Elisp
+
+;;;###autoload
+(defun jakuri-insert-uncompiled-functions ()
+  "Insert uncompiled functions at point."
+  (interactive)
+  (let (f)
+    (mapatoms (lambda (s)
+                (when (jakuri--uncompiled-function-p (symbol-function s))
+                  (push (symbol-name s) f))))
+    (setq f (cl-sort f #'string<))
+    (dolist (s f)
+      (insert s "\n"))))
+
+(defun jakuri--uncompiled-function-p (f)
+  "Non-nil if F is an uncompiled function object."
+  (and (functionp f)
+       (not (byte-code-function-p f))
+       (not (subrp f))
+       (not (symbolp f))))
+
+;;;###autoload
+(defun jakuri-expand-custom-set ()
+  "Expand `custom-set-variables' and the like.
+This is used to expand `custom-set-variables' forms to enable better
+profiling startup times."
+  (interactive)
+  (down-list)
+  (let ((setfunc (buffer-substring (point) (progn (forward-sexp) (point)))))
+    (forward-sexp)
+    (backward-sexp)
+    (let ((start (point)))
+      (while (condition-case nil
+                 (progn (forward-sexp) t)
+               (scan-error nil))
+        (backward-sexp)
+        (insert "(" setfunc " ")
+        (forward-sexp)
+        (insert ")"))
+      (let ((text (buffer-substring start (point))))
+        (delete-region start (point))
+        (backward-up-list)
+        (delete-region (point) (progn (forward-sexp) (point)))
+        (let ((start (point)))
+          (insert text)
+          (indent-region start (point)))))))
+
+;;;###autoload
+(defun jakuri-custom-eval-set-variable ()
+  "Evaluate ‘customize’ variable setting around point."
+  (interactive)
+  (save-excursion
+    (backward-up-list)
+    (seq-let (sym val) (read (current-buffer))
+      (funcall #'custom-set-variables (list sym val))
+      (message "%S" val))))
+
+
 ;;; Comint/shell
 
 ;;;###autoload
