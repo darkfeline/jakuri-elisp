@@ -80,6 +80,41 @@ If current directory is remote, use the home directory instead."
   (let ((default-directory dir))
     (shell (generate-new-buffer-name "*shell*"))))
 
+;;;###autoload
+(defun jakuri-disable-comint-expansion ()
+  "Disable comint expansion, e.g. of history \"!\"."
+  (interactive)
+  (defvar comint-input-autoexpand)
+  (setq-local comint-input-autoexpand nil)
+  (defvar shell-input-autoexpand)
+  (setq-local shell-input-autoexpand nil))
+
+;;;###autoload
+(defun jakuri-shell-set-ssh-agent (&optional agent)
+  "Set SSH_AUTH_SOCK to AGENT in the current shell.
+If AGENT is nil, uses the value from the environment."
+  (interactive)
+  (unless agent
+    (setq agent (getenv "SSH_AUTH_SOCK")))
+  (jakuri-shell-exec (format "export SSH_AUTH_SOCK=%s" (shell-quote-argument agent))))
+
+(defun jakuri-shell-exec (command)
+  "Run COMMAND in current shell buffer."
+  (let* ((proc (get-buffer-process (current-buffer)))
+         (pmark (process-mark proc))
+         (started-at-pmark (= (point) (marker-position pmark))))
+    (save-excursion
+      (goto-char pmark)
+      ;; If the process echoes commands, don't insert a fake command in
+      ;; the buffer or it will appear twice.
+      (unless comint-process-echoes
+        (insert command) (insert "\n"))
+      (sit-for 0)                       ; force redisplay
+      (comint-send-string proc command)
+      (comint-send-string proc "\n")
+      (set-marker pmark (point)))
+    (if started-at-pmark (goto-char (marker-position pmark)))))
+
 
 ;;; Buffer and files
 
