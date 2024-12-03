@@ -60,6 +60,13 @@
                               (aset table ?\" ?')
                               table)))
 
+;;;###autoload
+(defun jakuri-remove-region-readonly (beg end)
+  "Remove the read-only property from the region BEG to END."
+  (interactive "r")
+  (let ((inhibit-read-only t))
+    (remove-text-properties beg end '(read-only t))))
+
 
 ;;; Comint/shell
 
