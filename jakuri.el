@@ -199,6 +199,38 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
         interprogram-paste-function nil))
 
 
+;;; Debug
+
+;;;###autoload
+(defun jakuri-debug-kill-emacs ()
+  "Add debug to `kill-emacs-hook'."
+  (let* ((f "/tmp/kill-emacs.log")
+         (makelogger (lambda (s)
+                       (lambda ()
+                         (write-region (format "%s %s\n" (format-time-string "%FT%T%z") s)
+                                       nil f t))))
+         newhook)
+    (push (funcall makelogger "Starting `kill-emacs-hook'") newhook)
+    (dolist (x kill-emacs-hook)
+      (push (funcall makelogger (if (symbolp x)
+                                    (format "Starting `%s'" (symbol-name x))
+                                  (format "Starting non-symbol %S" x)))
+            newhook)
+      (push x newhook))
+    (push (funcall makelogger "Finished `kill-emacs-hook'") newhook)
+    (setq kill-emacs-hook (nreverse newhook))))
+
+;;;###autoload
+(defmacro jakuri-dbg (format x)
+  "Print X using FORMAT and return X.
+Used for debugging."
+  (declare (debug (stringp form)))
+  (let ((sym (make-symbol "sym")))
+    `(let ((,sym ,x))
+       (message ,format ,sym)
+       ,sym)))
+
+
 ;;; Misc
 
 ;;;###autoload
