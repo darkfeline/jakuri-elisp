@@ -289,6 +289,16 @@ Used for debugging."
        ,sym)))
 
 
+;;; Git
+
+;;;###autoload
+(defun jakuri-find-gitdir ()
+  "Find git directory."
+  (interactive)
+  (require 'magit)
+  (dired (magit-gitdir)))
+
+
 ;;; Misc
 
 ;;;###autoload
