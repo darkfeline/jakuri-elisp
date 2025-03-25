@@ -256,6 +256,12 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
         interprogram-cut-function #'gui-select-text
         interprogram-paste-function #'gui-selection-value))
 
+;;;###autoload
+(defun jakuri-paste-from-x ()
+  "Paste from X (for Wayland Emacs)."
+  (interactive)
+  (insert (shell-command-to-string "xclip -selection clipboard -out")))
+
 
 ;;; Debug
 
