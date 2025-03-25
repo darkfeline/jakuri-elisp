@@ -253,8 +253,8 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
   "Reset reintegrate bindings."
   (interactive)
   (setq browse-url-browser-function #'browse-url-default-browser
-        interprogram-cut-function nil
-        interprogram-paste-function nil))
+        interprogram-cut-function #'gui-select-text
+        interprogram-paste-function #'gui-selection-value))
 
 
 ;;; Debug
