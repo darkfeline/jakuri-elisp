@@ -201,6 +201,21 @@ If AGENT is nil, uses the value from the environment."
                 dired-directory))
              (t (buffer-file-name)))))
 
+;;;###autoload
+(defun jakuri-delete-empty-dirs (dir)
+  "Recursively delete empty directories in DIR, without recursive calls."
+  (interactive "DParent directory to delete empty dirs: ")
+  (let ((dirs (list dir)))
+    (while dirs
+      (let ((dir (pop dirs)))
+        (dolist (file (directory-files dir t))
+          (unless (member file '("." ".."))
+            (let ((path (expand-file-name file dir)))
+              (if (file-directory-p path)
+                  (push path dirs)))))
+        (when (<= (length (directory-files dir t)) 2)
+          (delete-directory dir))))))
+
 
 ;;; Packages
 
@@ -315,6 +330,18 @@ Used for debugging."
     (if f
         (ediff f (concat f ".pacnew"))
       (user-error "Buffer has no file"))))
+
+(defun jakuri-delete-orphaned-elc-files (dir)
+  (dolist (path (directory-files-recursively dir "\\.elc$"))
+    (unless (file-exists-p (substring path 0 -1))
+      (delete-file path))))
+
+;;;###autoload
+(defun jakuri-cleanup-elpa ()
+  "Clean up orphaned dirs in elpa directory."
+  (interactive)
+  (jakuri-delete-orphaned-elc-files package-user-dir)
+  (jakuri-delete-empty-dirs package-user-dir))
 
 (provide 'jakuri)
 ;;; jakuri.el ends here
