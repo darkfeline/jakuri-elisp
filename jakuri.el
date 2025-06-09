@@ -208,13 +208,13 @@ If AGENT is nil, uses the value from the environment."
   (let ((dirs (list dir)))
     (while dirs
       (let ((dir (pop dirs)))
-        (dolist (file (directory-files dir t))
+        (dolist (file (directory-files dir))
           (unless (member file '("." ".."))
             (let ((path (expand-file-name file dir)))
               (if (and (file-directory-p path)
                        (not (file-symlink-p path)))
                   (push path dirs)))))
-        (when (<= (length (directory-files dir t)) 2)
+        (when (<= (length (directory-files dir)) 2)
           (delete-directory dir))))))
 
 
