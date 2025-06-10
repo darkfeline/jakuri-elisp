@@ -232,18 +232,6 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
     (with-demoted-errors "Error while recompiling: %S"
       (package-recompile pkg-desc))))
 
-;;;###autoload
-(defun jakuri-package-rebuild ()
-  "Rebuild all package stuff."
-  (interactive)
-  (package-initialize)
-  (package-quickstart-refresh)
-  (jakuri-package-recompile-all))
-
-(defun jakuri-delete-elc-files (dir)
-  (dolist (path (directory-files-recursively dir "\\.elc$"))
-    (delete-file path)))
-
 (defun jakuri-delete-orphaned-elc-files (dir)
   (dolist (path (directory-files-recursively dir "\\.elc$"))
     (unless (file-exists-p (substring path 0 -1))
@@ -256,19 +244,22 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
   (jakuri-delete-orphaned-elc-files package-user-dir)
   (jakuri-delete-empty-dirs package-user-dir))
 
+(defvar jakuri-vc-packages nil
+  "List of vc packages for `jakuri-package-rebuild'.")
+
 ;;;###autoload
-(defun jakuri-package-clean ()
-  "Delete all generated package related files."
+(defun jakuri-package-rebuild ()
+  "Rebuild all package stuff."
   (interactive)
-  (when (file-exists-p package-quickstart-file)
-    (delete-file package-quickstart-file))
-
-  ;; This should force reinstall and rebuild for vc packages.
-  (dolist (file (directory-files package-user-dir t))
-    (when (file-symlink-p file)
-      (delete-file file)))
-
-  (jakuri-delete-elc-files))
+  (package-initialize)
+  (jakuri-cleanup-elpa)
+  (jakuri-package-recompile-all)
+  (dolist (pkg jakuri-vc-packages)
+    (let ((desc (cadr (assoc (symbol-name pkg)
+                             package-alist
+                             #'string=))))
+      (package-vc-rebuild desc)))
+  (package-quickstart-refresh))
 
 
 ;;; System integration
