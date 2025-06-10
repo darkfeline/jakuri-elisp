@@ -240,6 +240,18 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
   (package-quickstart-refresh)
   (jakuri-package-recompile-all))
 
+(defun jakuri-delete-orphaned-elc-files (dir)
+  (dolist (path (directory-files-recursively dir "\\.elc$"))
+    (unless (file-exists-p (substring path 0 -1))
+      (delete-file path))))
+
+;;;###autoload
+(defun jakuri-cleanup-elpa ()
+  "Clean up orphaned dirs in elpa directory."
+  (interactive)
+  (jakuri-delete-orphaned-elc-files package-user-dir)
+  (jakuri-delete-empty-dirs package-user-dir))
+
 
 ;;; System integration
 
@@ -331,18 +343,6 @@ Used for debugging."
     (if f
         (ediff f (concat f ".pacnew"))
       (user-error "Buffer has no file"))))
-
-(defun jakuri-delete-orphaned-elc-files (dir)
-  (dolist (path (directory-files-recursively dir "\\.elc$"))
-    (unless (file-exists-p (substring path 0 -1))
-      (delete-file path))))
-
-;;;###autoload
-(defun jakuri-cleanup-elpa ()
-  "Clean up orphaned dirs in elpa directory."
-  (interactive)
-  (jakuri-delete-orphaned-elc-files package-user-dir)
-  (jakuri-delete-empty-dirs package-user-dir))
 
 (provide 'jakuri)
 ;;; jakuri.el ends here
