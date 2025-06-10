@@ -240,6 +240,10 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
   (package-quickstart-refresh)
   (jakuri-package-recompile-all))
 
+(defun jakuri-delete-elc-files (dir)
+  (dolist (path (directory-files-recursively dir "\\.elc$"))
+    (delete-file path)))
+
 (defun jakuri-delete-orphaned-elc-files (dir)
   (dolist (path (directory-files-recursively dir "\\.elc$"))
     (unless (file-exists-p (substring path 0 -1))
@@ -251,6 +255,20 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
   (interactive)
   (jakuri-delete-orphaned-elc-files package-user-dir)
   (jakuri-delete-empty-dirs package-user-dir))
+
+;;;###autoload
+(defun jakuri-package-clean ()
+  "Delete all generated package related files."
+  (interactive)
+  (when (file-exists-p package-quickstart-file)
+    (delete-file package-quickstart-file))
+
+  ;; This should force reinstall and rebuild for vc packages.
+  (dolist (file (directory-files package-user-dir t))
+    (when (file-symlink-p file)
+      (delete-file file)))
+
+  (jakuri-delete-elc-files))
 
 
 ;;; System integration
