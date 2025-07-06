@@ -40,12 +40,9 @@ If nil, the name of the library file is used.")
   "Return symbol prefix for the current buffer."
   (if elpf-prefix
       elpf-prefix
-    (require 'package)
-    (setq elpf-prefix (let ((pkg (package-load-descriptor default-directory)))
-                        (cond
-                         (pkg (symbol-name (package-desc-name pkg)))
-                         (buffer-file-name (file-name-base buffer-file-name))
-                         (t elpf--prefix-fallback))))))
+    (setq elpf-prefix (cond
+                       (buffer-file-name (file-name-base buffer-file-name))
+                       (t elpf--prefix-fallback)))))
 
 ;;;###autoload
 (defun elpf-set-prefix (value)
