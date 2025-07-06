@@ -46,9 +46,15 @@
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.kpr\\'". keeper-mode))
 
+(defconst keeper--entry-keywords-pattern
+  (regexp-opt '("unit" "balance" "tx" "disable" "account" "treebal") 'words))
+
+(defconst keeper--end-keyword-pattern
+  "\\bend\\b")
+
 (defvar keeper--keywords
-  `(("\\bend\\b" . 'keeper-end)
-    (,(regexp-opt '("unit" "balance" "tx" "disable" "account" "treebal")) . 'keeper-keyword)
+  `((,keeper--end-keyword-pattern . 'keeper-end)
+    (,keeper--entry-keywords-pattern . 'keeper-keyword)
     (,keeper--account-pattern . 'keeper-account)
     (,keeper--unit-pattern . 'keeper-unit)))
 
@@ -62,6 +68,31 @@
   (setq font-lock-defaults `(keeper--keywords nil nil ,keeper--syntax)
         comment-start "#")
   (setq-local completion-at-point-functions '(keeper--complete)))
+
+(defun keeper--forward-entry (&optional arg)
+  (let ((arg (if arg arg 1)))
+    (dotimes (_ arg)
+      (re-search-forward keeper--end-keyword-pattern))))
+
+(defun keeper--backward-entry (&optional arg)
+  (let ((arg (if arg arg 1)))
+    (dotimes (_ arg)
+      (re-search-backward keeper--entry-keywords-pattern))))
+
+;;;###autoload
+(defun keeper-copy-entry ()
+  "Copy current keeper entry."
+  (interactive)
+  (let ((text (save-excursion
+                (keeper--backward-entry)
+                (let ((beg (point)))
+                  (keeper--forward-entry)
+                  (buffer-substring-no-properties beg (point))))))
+    (goto-char (point-max))
+    (save-excursion (insert text))
+    (save-excursion
+      (when (re-search-forward keeper--date-pattern nil t)
+        (toki-update-date-at-point)))))
 
 
 ;;; Completion
