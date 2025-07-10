@@ -62,6 +62,11 @@
   '(("#" . "<")
     ("\n" . ">")))
 
+(defvar keeper-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [?\C-c ?\C-c] #'keeper-copy-entry)
+    map))
+
 ;;;###autoload
 (define-derived-mode keeper-mode prog-mode "Keeper"
   "Major mode for editing keeper files."
