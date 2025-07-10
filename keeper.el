@@ -74,7 +74,7 @@
         comment-start "#")
   (setq-local completion-at-point-functions '(keeper--complete)))
 
-(defun keeper--forward-entry (&optional arg)
+(defun keeper--forward-end (&optional arg)
   (let ((arg (if arg arg 1)))
     (dotimes (_ arg)
       (re-search-forward keeper--end-keyword-pattern))))
@@ -91,7 +91,7 @@
   (let ((text (save-excursion
                 (keeper--backward-entry)
                 (let ((beg (point)))
-                  (keeper--forward-entry)
+                  (keeper--forward-end)
                   (buffer-substring-no-properties beg (point))))))
     (goto-char (point-max))
     (save-excursion (insert text))
