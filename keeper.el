@@ -74,6 +74,28 @@
         comment-start "#")
   (setq-local completion-at-point-functions '(keeper--complete)))
 
+;;;###autoload
+(defun keeper-copy-entry ()
+  "Copy current keeper entry."
+  (interactive)
+  (let ((text keeper--current-entry))
+    (goto-char (point-max))
+    (save-excursion (insert text))
+    (save-excursion
+      (when (re-search-forward keeper--date-pattern nil t)
+        (toki-update-date-at-point)))))
+
+(defun keeper--current-entry ()
+  (save-excursion
+    (keeper--backward-entry)
+    (pcase (thing-at-point 'symbol)
+      ("tx"
+       (let ((beg (point)))
+         (keeper--forward-end)
+         (buffer-substring-no-properties beg (point))))
+      (text
+       (error "unknown entry type %s" text)))))
+
 (defun keeper--forward-end (&optional arg)
   (let ((arg (if arg arg 1)))
     (dotimes (_ arg)
@@ -83,21 +105,6 @@
   (let ((arg (if arg arg 1)))
     (dotimes (_ arg)
       (re-search-backward keeper--entry-keywords-pattern))))
-
-;;;###autoload
-(defun keeper-copy-entry ()
-  "Copy current keeper entry."
-  (interactive)
-  (let ((text (save-excursion
-                (keeper--backward-entry)
-                (let ((beg (point)))
-                  (keeper--forward-end)
-                  (buffer-substring-no-properties beg (point))))))
-    (goto-char (point-max))
-    (save-excursion (insert text))
-    (save-excursion
-      (when (re-search-forward keeper--date-pattern nil t)
-        (toki-update-date-at-point)))))
 
 
 ;;; Completion

@@ -27,6 +27,23 @@
 (require 'keeper)
 (require 'ert)
 
+(ert-deftest keeper--current-entry/tx ()
+  (should (equal (with-temp-buffer
+                   (insert "balance 2020-01-02 Assets:Cash
+tx 2020-01-15 \"Initial\"
+Assets:Cash 23.45 USD
+Equity:Capital
+end
+balance 2020-02-02 Assets:Cash
+")
+                   (goto-char (point-min))
+                   (forward-line 3)
+                   (keeper--current-entry))
+                 "tx 2020-01-15 \"Initial\"
+Assets:Cash 23.45 USD
+Equity:Capital
+end")))
+
 (ert-deftest keeper--account-parts ()
   (should (equal (keeper--account-parts "Foo:Bar:Baz") '("Foo" "Bar" "Baz"))))
 
