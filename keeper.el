@@ -64,7 +64,7 @@
 
 (defvar keeper-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [?\C-c ?\C-c] #'keeper-copy-current-entry)
+    (define-key map [?\C-c ?\C-c] #'keeper-copy-entry)
     map))
 
 ;;;###autoload
@@ -80,7 +80,7 @@
   (interactive)
   (if (region-active-p)
       (call-interactively #'keeper-copy-region-update-dates)
-    (call-interactively #'keeper-copy-current-entry)))
+    (call-interactively #'keeper-copy-entry)))
 
 ;;;###autoload
 (defun keeper-copy-region-update-dates (beg end &optional date)
@@ -108,7 +108,7 @@ If DATE is nil or the empty string, use today's date."
         (replace-match date)))))
 
 ;;;###autoload
-(defun keeper-copy-current-entry ()
+(defun keeper-copy-entry ()
   "Copy current keeper entry."
   (interactive)
   (let ((text (keeper--current-entry)))
