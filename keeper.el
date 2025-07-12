@@ -64,7 +64,7 @@
 
 (defvar keeper-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [?\C-c ?\C-c] #'keeper-copy-entry)
+    (define-key map [?\C-c ?\C-c] #'keeper-copy-dwim)
     map))
 
 ;;;###autoload
