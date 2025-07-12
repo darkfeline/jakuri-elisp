@@ -64,7 +64,7 @@
 
 (defvar keeper-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [?\C-c ?\C-c] #'keeper-copy-entry)
+    (define-key map [?\C-c ?\C-c] #'keeper-copy-current-entry)
     map))
 
 ;;;###autoload
@@ -96,7 +96,7 @@
       (toki-update-date-at-point))))
 
 ;;;###autoload
-(defun keeper-copy-entry ()
+(defun keeper-copy-current-entry ()
   "Copy current keeper entry."
   (interactive)
   (let ((text (keeper--current-entry)))
