@@ -75,7 +75,7 @@
   (setq-local completion-at-point-functions '(keeper--complete)))
 
 ;;;###autoload
-(defun keeper-update-dates-in-region (beg end &optional date)
+(defun keeper-update-dates-region (beg end &optional date)
   "Update dates in region between BEG and END to DATE.
 
 If DATE is nil or the empty string, use today's date."
