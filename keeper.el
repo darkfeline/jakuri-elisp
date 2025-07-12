@@ -75,25 +75,19 @@
   (setq-local completion-at-point-functions '(keeper--complete)))
 
 ;;;###autoload
-(defun keeper-set-dates-in-region (beg end date)
-  "Set dates in region between BEG and END to DATE."
-  (interactive "r\nsDate to set: ")
-  (save-restriction
-    (narrow-to-region beg end)
-    (goto-char (point-min))
-    (while (re-search-forward keeper--date-pattern nil t)
-      (replace-match date))))
+(defun keeper-update-dates-in-region (beg end &optional date)
+  "Update dates in region between BEG and END to DATE.
 
-;;;###autoload
-(defun keeper-update-dates-in-region (beg end)
-  "Update dates in region between BEG and END to today."
-  (interactive "r")
-  (save-restriction
-    (narrow-to-region beg end)
-    (goto-char (point-min))
-    (while (re-search-forward keeper--date-pattern nil t)
-      (backward-char)
-      (toki-update-date-at-point))))
+If DATE is nil or the empty string, use today's date."
+  (interactive "r\nsDate to set (default today): ")
+  (let ((date (if (string-empty-p (or date ""))
+                  (format-time-string "%F")
+                date)))
+    (save-restriction
+      (narrow-to-region beg end)
+      (goto-char (point-min))
+      (while (re-search-forward keeper--date-pattern nil t)
+        (replace-match date)))))
 
 ;;;###autoload
 (defun keeper-copy-current-entry ()
