@@ -99,7 +99,7 @@
 (defun keeper-copy-entry ()
   "Copy current keeper entry."
   (interactive)
-  (let ((text keeper--current-entry))
+  (let ((text (keeper--current-entry)))
     (goto-char (point-max))
     (save-excursion (insert text))
     (save-excursion
