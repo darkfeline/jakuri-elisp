@@ -67,6 +67,12 @@
     (define-key map [?\C-c ?\C-c] #'keeper-copy-dwim)
     map))
 
+(defvar keeper-mode-syntax-table
+  (let ((st (make-syntax-table)))
+    (modify-syntax-entry ?# "<" st)
+    (modify-syntax-entry ?\n ">" st)
+    st))
+
 ;;;###autoload
 (define-derived-mode keeper-mode prog-mode "Keeper"
   "Major mode for editing keeper files."
@@ -129,15 +135,22 @@ If DATE is nil or the empty string, use today's date."
       (text
        (error "unknown entry type %s" text)))))
 
+(defsubst keeper--in-comment-p ()
+  (nth 4 (syntax-ppss)))
+
 (defun keeper--forward-end (&optional arg)
   (let ((arg (if arg arg 1)))
     (dotimes (_ arg)
-      (re-search-forward keeper--end-keyword-pattern))))
+      (re-search-forward keeper--end-keyword-pattern)
+      (while (keeper--in-comment-p)
+        (re-search-forward keeper--end-keyword-pattern)))))
 
 (defun keeper--backward-entry (&optional arg)
   (let ((arg (if arg arg 1)))
     (dotimes (_ arg)
-      (re-search-backward keeper--entry-keywords-pattern))))
+      (re-search-backward keeper--entry-keywords-pattern)
+      (while (keeper--in-comment-p)
+        (re-search-backward keeper--entry-keywords-pattern)))))
 
 
 ;;; Completion
