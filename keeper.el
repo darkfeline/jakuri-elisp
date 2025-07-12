@@ -75,6 +75,24 @@
   (setq-local completion-at-point-functions '(keeper--complete)))
 
 ;;;###autoload
+(defun keeper-copy-dwim ()
+  "Copy current entry or region."
+  (interactive)
+  (if (region-active-p)
+      (call-interactively #'keeper-copy-region-update-dates)
+    (call-interactively #'keeper-copy-current-entry)))
+
+;;;###autoload
+(defun keeper-copy-region-update-dates (beg end &optional date)
+  "Copy between BEG and END and update dates to DATE."
+  (interactive "r\nsDate to set (default today): ")
+  (let ((text (buffer-substring-no-properties beg end)))
+    (goto-chart (point-max))
+    (let ((beg (point)))
+      (insert text)
+      (keeper-update-dates-region beg (point) date))))
+
+;;;###autoload
 (defun keeper-update-dates-region (beg end &optional date)
   "Update dates in region between BEG and END to DATE.
 
