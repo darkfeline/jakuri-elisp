@@ -130,7 +130,8 @@ If DATE is nil or the empty string, use today's date."
 
 (defun keeper--current-entry ()
   (save-excursion
-    (keeper--backward-entry)
+    (unless (looking-at keeper--entry-keywords-pattern)
+      (keeper--backward-entry))
     (pcase (thing-at-point 'symbol)
       ("tx"
        (let ((beg (point)))
