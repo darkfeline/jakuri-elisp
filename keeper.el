@@ -96,6 +96,7 @@
     (goto-char (point-max))
     (let ((beg (point)))
       (insert text)
+      (unless (bolp) (insert "\n"))
       (keeper-update-dates-region beg (point) date))))
 
 ;;;###autoload
@@ -119,7 +120,10 @@ If DATE is nil or the empty string, use today's date."
   (interactive)
   (let ((text (keeper--current-entry)))
     (goto-char (point-max))
-    (save-excursion (insert text))
+    (unless (bolp) (insert "\n"))
+    (save-excursion
+      (insert text)
+      (unless (bolp) (insert "\n")))
     (save-excursion
       (when (re-search-forward keeper--date-pattern nil t)
         (toki-update-date-at-point)))))
