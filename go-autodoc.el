@@ -34,7 +34,9 @@
      ((string= kind "type") (insert (if (string-match "^[aeiouAEIOU]" ident)
                                         (format "An %s" ident)
                                       (format "A %s" ident))))
-     ((string= kind "package") (insert (format "Package %s" ident)))
+     ((string= kind "package") (if (string= ident "main")
+                                   (insert (format "Command %s" (go-autodoc--directory-name)))
+                                (insert (format "Package %s" ident))))
      (t (insert ident)))))
 
 (defun go-autodoc--identifier ()
@@ -71,6 +73,12 @@
      ((looking-at (rx (group-n 1 (1+ word))))
       (list "nested" (match-string-no-properties 1)))
      (t (error "No autodoc identifier found")))))
+
+(defun go-autodoc--directory-name ()
+  "Return name of directory for current buffer file.
+
+Used to identify name for main packages in Go."
+  (file-name-nondirectory (directory-file-name (file-name-directory (buffer-file-name)))))
 
 ;;;###autoload
 (with-eval-after-load 'go-mode
