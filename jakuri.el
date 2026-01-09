@@ -67,6 +67,15 @@
   (let ((inhibit-read-only t))
     (remove-text-properties beg end '(read-only t))))
 
+;;;###autoload
+(defun jakuri-remove-md-links (beg end)
+  "Remove Markdown links from the region BEG to END."
+  (interactive "r")
+  (replace-regexp-in-region
+   (rx "[" (group (1+ (not "]"))) "]"
+       "(" (1+ (not ")")) ")")
+   "\\1" beg end))
+
 
 ;;; Elisp
 
