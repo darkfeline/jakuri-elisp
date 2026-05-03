@@ -246,11 +246,16 @@ Patched for `https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-02/msg00611.h
     (unless (file-exists-p (substring path 0 -1))
       (delete-file path))))
 
+(defun jakuri--delete-elpa-junk (dir)
+  (dolist (path (directory-files-recursively dir "\\.dir-locals\\.el$"))
+    (delete-file path)))
+
 ;;;###autoload
 (defun jakuri-cleanup-elpa ()
   "Clean up orphaned dirs in elpa directory."
   (interactive)
   (jakuri-delete-orphaned-elc-files package-user-dir)
+  (jakuri--delete-elpa-junk package-user-dir)
   (jakuri-delete-empty-dirs package-user-dir))
 
 (defvar jakuri-vc-packages nil
