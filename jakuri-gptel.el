@@ -1,4 +1,4 @@
-;;; jakuri-gptel-adds.el --- gptel additions (tools, presets, etc)  -*- lexical-binding: t; -*-
+;;; jakuri-gptel.el --- gptel additions (tools, presets, etc)  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2026  Allen Li
 
@@ -26,7 +26,7 @@
 
 (require 'gptel)
 
-(defun jakuri-gptel-adds--obsidian (callback args)
+(defun jakuri-gptel--obsidian (callback args)
   "Run obsidian-cli command with ARGS."
   (let* ((output-buffer (generate-new-buffer " *gptel-agent-obsidian*"))
          (proc (make-process
@@ -51,7 +51,7 @@
 (gptel-make-tool
  :name "obsidian-cli"
  :description "Run obsidian CLI command. Prefer using this over any shell tools to make user confirmation easier."
- :function #'jakuri-gptel-adds--obsidian
+ :function #'jakuri-gptel--obsidian
  :args '(( :name "args"
            :type array
            :items
@@ -61,5 +61,5 @@
  :async t
  :confirm t)
 
-(provide 'jakuri-gptel-adds)
-;;; jakuri-gptel-adds.el ends here
+(provide 'jakuri-gptel)
+;;; jakuri-gptel.el ends here
