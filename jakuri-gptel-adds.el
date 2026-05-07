@@ -26,13 +26,13 @@
 
 (require 'gptel)
 
-(defun jakuri-gptel-adds--obsidian-cli (callback args)
+(defun jakuri-gptel-adds--obsidian (callback args)
   "Run obsidian-cli command with ARGS."
   (let* ((output-buffer (generate-new-buffer " *gptel-agent-obsidian*"))
          (proc (make-process
                 :name "gptel-agent-obsidian"
                 :buffer output-buffer
-                :command (append (list "obsidian-cli") args nil)
+                :command (append (list "obsidian") args nil)
                 :connection-type 'pipe
                 :sentinel
                 (lambda (process _event)
@@ -50,13 +50,13 @@
 
 (gptel-make-tool
  :name "obsidian-cli"
- :description "Run obsidian-cli command. Prefer using this over any shell tools to make user confirmation easier."
- :function #'jakuri-gptel-adds--obsidian-cli
+ :description "Run obsidian CLI command. Prefer using this over any shell tools to make user confirmation easier."
+ :function #'jakuri-gptel-adds--obsidian
  :args '(( :name "args"
            :type array
            :items
            ( :type string
-             :description "Argument to obsidian-cli command.  This is NOT interpreted by a shell.")))
+             :description "Argument to obsidian command.  This is NOT interpreted by a shell.")))
  :category "jakuri"
  :async t
  :confirm t)
