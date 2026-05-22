@@ -61,5 +61,49 @@
  :async t
  :confirm t)
 
+;;;###autoload
+(defun jakuri-gptel-load-mcp-json (file)
+  "Load MCP servers from JSON FILE and return a value for `mcp-hub-servers'."
+  (let* ((data (with-temp-buffer
+                 (insert-file-contents file)
+                 (goto-char (point-min))
+                 (json-parse-buffer :object-type 'alist
+                                    :array-type 'list
+                                    :null-object nil
+                                    :false-object nil)))
+         (mcp-servers (cdr (assoc 'mcpServers data)))
+         result)
+    (dolist (server mcp-servers (nreverse result))
+      (let* ((name (symbol-name (car server)))
+             (config (cdr server))
+             (command (cdr (assoc 'command config)))
+             (args (cdr (assoc 'args config)))
+             (url (cdr (assoc 'url config)))
+             (env (cdr (assoc 'env config)))
+             (token (cdr (assoc 'token config)))
+             (headers (cdr (assoc 'headers config)))
+             (roots (cdr (assoc 'roots config)))
+             (timeout (cdr (assoc 'timeout config)))
+             plist)
+        (when command (setq plist (plist-put plist :command command)))
+        (when args (setq plist (plist-put plist :args args)))
+        (when url (setq plist (plist-put plist :url url)))
+        (when env
+          (let (env-plist)
+            (dolist (kv env)
+              (setq env-plist (plist-put env-plist
+                                         (intern (concat ":" (symbol-name (car kv))))
+                                         (cdr kv))))
+            (setq plist (plist-put plist :env env-plist))))
+        (when token (setq plist (plist-put plist :token token)))
+        (when headers
+          (let (headers-alist)
+            (dolist (kv headers)
+              (push (cons (symbol-name (car kv)) (cdr kv)) headers-alist))
+            (setq plist (plist-put plist :headers (nreverse headers-alist)))))
+        (when roots (setq plist (plist-put plist :roots roots)))
+        (when timeout (setq plist (plist-put plist :timeout timeout)))
+        (push (cons name plist) result)))))
+
 (provide 'jakuri-gptel)
 ;;; jakuri-gptel.el ends here

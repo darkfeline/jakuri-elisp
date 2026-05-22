@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "server1": {
+      "command": "npx",
+      "args": ["-y", "@server/something"],
+      "env": {
+        "API_KEY": "secret"
+      }
+    }
+  }
+}
