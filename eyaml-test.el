@@ -32,10 +32,10 @@
 (ert-deftest eyaml/encrypt-and-decrypt-region/string ()
   (skip-unless (executable-find "eyaml"))
   (let ((eyaml-private-key
-         (expand-file-name "keys/private_key.pkcs7.pem"
+         (expand-file-name "testdata/keys/private_key.pkcs7.pem"
                            eyaml--pkgdir))
         (eyaml-public-key
-         (expand-file-name "keys/public_key.pkcs7.pem"
+         (expand-file-name "testdata/keys/public_key.pkcs7.pem"
                            eyaml--pkgdir)))
    (with-temp-buffer
     (insert "foo bar")
@@ -46,10 +46,10 @@
 (ert-deftest eyaml/encrypt-and-decrypt-region/block ()
   (skip-unless (executable-find "eyaml"))
   (let ((eyaml-private-key
-         (expand-file-name "keys/private_key.pkcs7.pem"
+         (expand-file-name "testdata/keys/private_key.pkcs7.pem"
                            eyaml--pkgdir))
         (eyaml-public-key
-         (expand-file-name "keys/public_key.pkcs7.pem"
+         (expand-file-name "testdata/keys/public_key.pkcs7.pem"
                            eyaml--pkgdir)))
    (with-temp-buffer
     (insert "foo bar")
