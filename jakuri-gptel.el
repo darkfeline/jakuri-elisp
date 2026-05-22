@@ -63,7 +63,10 @@
 
 ;;;###autoload
 (defun jakuri-gptel-load-mcp-json (file)
-  "Load MCP servers from JSON FILE and return a value for `mcp-hub-servers'."
+  "Load MCP servers from JSON FILE and return a value for `mcp-hub-servers'.
+
+Format is specified in URL
+`https://gofastmcp.com/integrations/mcp-json-configuration'."
   (let* ((data (with-temp-buffer
                  (insert-file-contents file)
                  (goto-char (point-min))
