@@ -30,7 +30,7 @@
 (defconst jakuri-gptel-test--dir
   (file-name-directory (or load-file-name buffer-file-name)))
 
-(ert-deftest jakuri-gptel-load-mcp-json-test ()
+(ert-deftest jakuri-gptel-load-mcp-json ()
   (let* ((test-file (expand-file-name "testdata/mcp-config.json" jakuri-gptel-test--dir))
          (result (jakuri-gptel-load-mcp-json test-file)))
     (should (equal result
@@ -38,6 +38,27 @@
                       :command "npx"
                       :args ("-y" "@server/something")
                       :env (:API_KEY "secret")))))))
+
+(ert-deftest jakuri-gptel--parse-mcp-json ()
+  (should (equal (with-temp-buffer
+                   (insert "{}")
+                   (goto-char (point-min))
+                   (jakuri-gptel--parse-mcp-json))
+                 nil))
+  (should (equal (with-temp-buffer
+                   (insert "{\"mcpServers\": {\"server1\": {\"command\": \"npx\", \"args\": [\"-y\", \"@server/something\"], \"env\": {\"API_KEY\": \"secret\"}}}}")
+                   (goto-char (point-min))
+                   (jakuri-gptel--parse-mcp-json))
+                 '(("server1"
+                    :command "npx"
+                    :args ("-y" "@server/something")
+                    :env (:API_KEY "secret")))))
+  (should (equal (with-temp-buffer
+                   (insert "{\"mcpServers\": {\"server2\": {\"command\": \"python\"}}}")
+                   (goto-char (point-min))
+                   (jakuri-gptel--parse-mcp-json))
+                 '(("server2"
+                    :command "python")))))
 
 (provide 'jakuri-gptel-test)
 ;;; jakuri-gptel-test.el ends here
