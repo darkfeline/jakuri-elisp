@@ -26,41 +26,6 @@
 
 (require 'gptel)
 
-(defun jakuri-gptel--obsidian (callback args)
-  "Run obsidian-cli command with ARGS."
-  (let* ((output-buffer (generate-new-buffer " *gptel-agent-obsidian*"))
-         (proc (make-process
-                :name "gptel-agent-obsidian"
-                :buffer output-buffer
-                :command (append (list "obsidian") args nil)
-                :connection-type 'pipe
-                :sentinel
-                (lambda (process _event)
-                  (when (memq (process-status process) '(exit signal))
-                    (let* ((exit-code (process-exit-status process))
-                           (output (with-current-buffer (process-buffer process)
-                                     (buffer-string))))
-                      (kill-buffer (process-buffer process))
-                      (funcall callback
-                               (if (zerop exit-code)
-                                   output
-                                 (format "Command failed with exit code %d:\nSTDOUT+STDERR:\n%s"
-                                         exit-code output)))))))))
-    proc))
-
-(gptel-make-tool
- :name "obsidian-cli"
- :description "Run obsidian CLI command. Prefer using this over any shell tools to make user confirmation easier."
- :function #'jakuri-gptel--obsidian
- :args '(( :name "args"
-           :type array
-           :items
-           ( :type string
-             :description "Argument to obsidian command.  This is NOT interpreted by a shell.")))
- :category "jakuri"
- :async t
- :confirm t)
-
 ;;;###autoload
 (defun jakuri-gptel-load-mcp-json (file)
   "Load MCP servers from JSON FILE and return a value for `mcp-hub-servers'.
