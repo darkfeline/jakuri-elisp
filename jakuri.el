@@ -182,6 +182,16 @@ If AGENT is nil, uses the value from the environment."
       (set-marker pmark (point)))
     (if started-at-pmark (goto-char (marker-position pmark)))))
 
+;;;###autoload
+(defun jakuri-vterm (&optional arg)
+  "Like `vterm' but default to creating a new session."
+  (interactive "P")
+  (vterm (cond
+          ;; Swap prefix args
+          ((null arg) '(4))
+          ((consp arg) nil)
+          (t arg))))
+
 
 ;;; Buffer and files
 
