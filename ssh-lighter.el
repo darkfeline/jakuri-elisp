@@ -84,7 +84,6 @@
       'ssh-lighter-selected
     'ssh-lighter-unselected))
 
-;;;###autoload
 (defun ssh-lighter--eval ()
   "Return the formatted SSH indicator for the mode line, or nil if not in SSH."
   (when (ssh-lighter--in-ssh-p)
@@ -102,6 +101,7 @@ Add this symbol to `mode-line-misc-info' or `mode-line-format' to display
 the SSH indicator when running in an SSH session.  For example:
 
   (add-to-list \\='mode-line-misc-info \\='ssh-lighter)")
+(put 'ssh-lighter 'risky-local-variable t)
 
 (provide 'ssh-lighter)
 ;;; ssh-lighter.el ends here
